@@ -3,8 +3,8 @@ const path = require('path');
 const app = express();
 
 const Seguridad = require('./seguridad.js');
-const pool = require('./db');
-const initDB = require('./db/init');
+// Importamos initDB y pool directamente desde el archivo init.js
+const { initDB, pool } = require('./db/init');
 
 // Inicializa tablas si no existen
 initDB();
