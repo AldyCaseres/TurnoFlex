@@ -147,13 +147,6 @@ app.post('/logout', (req, res) => {
   res.redirect('/login');
 });
 
-// ================== SERVER ==================
-const PORT = process.env.PORT;
-
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`TurnoFlex escuchando en puerto ${PORT}`);
-});
-
 
 
 //=================db=======
@@ -168,3 +161,14 @@ app.get('/test-db', async (req, res) => {
     res.status(500).send('Error DB');
   }
 });
+
+// ================== SERVER ==================
+const PORT = process.env.PORT;
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`TurnoFlex escuchando en puerto ${PORT}`);
+});
+
+
+
+
