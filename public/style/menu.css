@@ -1,9 +1,7 @@
-
-
 /* Logo responsive */
 @media (max-width: 575.98px) {
   .logo-img {
-    height: 0px;
+    height: 40px; /* Ajustado para que no sea 0px y se vea en móviles */
   }
 }
 
@@ -45,6 +43,12 @@ body {
 .menu-section {
   background-color: #fff;
   padding: 2rem 1rem;
+  display: grid; /* Cambiado a Grid */
+  grid-template-columns: 1fr; /* Una columna en móvil */
+  gap: 1.5rem; /* Espacio entre botones */
+  width: 100%;
+  max-width: 1200px; /* Ancho máximo en pantallas grandes */
+  margin: auto;
 }
 
 /* Estilo de los botones del menú */
@@ -53,37 +57,55 @@ body {
   color: rgb(47, 11, 165);
   padding: 2rem;
   border-radius: 10px;
-  margin-bottom: 1.5rem;
   display: flex;
+  flex-direction: column; /* Icono arriba, texto abajo */
   align-items: center;
-  transition: background-color 0.3s;
+  justify-content: center;
+  transition: background-color 0.3s, transform 0.2s;
   border: none;
   width: 100%;
+  font-weight: bold;
+  text-align: center;
+  cursor: pointer;
 }
 
 .menu-item:hover {
   background-color: #4ac61d;
+  transform: scale(1.02);
 }
 
 .menu-item svg {
-  margin-right: 1rem;
+  margin-bottom: 0.5rem; /* Espacio debajo del icono */
+  width: 40px;
+  height: 40px;
+}
+
+/* Responsivo: Botones cuadrados y en línea para pantallas grandes */
+@media (min-width: 768px) {
+  .menu-section {
+    /* Crea 3 columnas iguales */
+    grid-template-columns: repeat(3, 1fr); 
+    padding: 4rem 2rem;
+  }
+
+  .menu-item {
+    aspect-ratio: 1 / 1; /* Esto hace que el botón sea cuadrado */
+    margin-bottom: 0; /* Quitamos el margen inferior porque el grid usa gap */
+  }
 }
 
 /* Botón de cerrar sesión */
 .logout-btn {
   color: #7c7c7c;
   text-align: center;
+  grid-column: 1 / -1; /* Hace que ocupe todo el ancho del grid */
   margin-top: 2rem;
   font-size: 0.9rem;
+  background: none;
+  border: none;
+  width: 100%;
 }
 
-/* Responsivo: centrar menú en pantallas medianas y grandes */
-@media (min-width: 768px) {
-  .menu-section {
-    max-width: 400px;
-    margin: auto;
-  }
-}
 /* ==================== LOGO SUPERIOR IZQUIERDO ==================== */
 .logo-container {
   position: absolute;
@@ -95,11 +117,4 @@ body {
 .logo-img {
   height: 80px;
   width: auto;
-}
-
-/* Logo aún más pequeño en móviles */
-@media (max-width: 575.98px) {
-  .logo-img {
-    height: 40px;
-  }
 }
