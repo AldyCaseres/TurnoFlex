@@ -4,10 +4,14 @@ const app = express();
 
 const Seguridad = require('./seguridad.js');
 const pool = require('./db');
+const initDB = require('./db/init');
+
+// Inicializa tablas si no existen
+initDB();
 
 // ================== CONFIGURACIÓN GLOBAL ==================
-const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
-const TOKEN = process.env.APP_TOKEN || "dev-token";
+const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const TOKEN = process.env.APP_TOKEN || 'dev-token';
 
 // ================== MIDDLEWARE ==================
 app.use(express.json());
@@ -15,11 +19,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 
-// ================== HEALTHCHECK REAL (DB) ==================
+// ================== HEALTHCHECK (Railway) ==================
 app.get('/health', async (req, res) => {
   try {
     await pool.query('SELECT 1');
-    res.status(200).send('DB OK');
+    res.status(200).send('OK');
   } catch (err) {
     console.error('Health DB error:', err);
     res.status(500).send('DB ERROR');
@@ -35,16 +39,15 @@ app.get('/login', (req, res) => {
   res.redirect('/');
 });
 
-// ================== VALIDAR LOGIN ==================
 app.post('/menu', (req, res) => {
   const { usuario, contrasena, token } = req.body;
 
-  if (usuario === "admin" && contrasena === "admin" && token === TOKEN) {
+  if (usuario === 'admin' && contrasena === 'admin' && token === TOKEN) {
     res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
   } else {
     res.send(`
       <h2>Usuario, contraseña o token incorrectos</h2>
-      <a href="/">Volver al login</a>
+      <a href="/">Volver</a>
     `);
   }
 });
@@ -58,65 +61,86 @@ app.post('/clientes', (req, res) => {
   res.render('clientes.ejs', { url: BASE_URL, token: TOKEN });
 });
 
-app.post('/api/clientes', (req, res) => {
-  let respuesta = Seguridad.nuevoCliente(req.body);
+app.post('/api/clientes', async (req, res) => {
+  const respuesta = await Seguridad.nuevoCliente(req.body);
+
   if (respuesta.success) {
     res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
+  } else {
+    res.status(401).send('Error al crear cliente');
   }
 });
 
-app.post('/dameClientes', (req, res) => {
-  let resultado = Seguridad.dameClientes(req.body);
+app.post('/dameClientes', async (req, res) => {
+  const resultado = await Seguridad.dameClientes(req.body);
+
   if (resultado.success) {
     res.render('listadoclientes.ejs', {
       url: BASE_URL,
       token: TOKEN,
       clientes: resultado.clientes
     });
+  } else {
+    res.status(401).send('No autorizado');
   }
 });
 
-app.post('/eliminarCliente', (req, res) => {
-  let resultado = Seguridad.eliminarCliente(req.body);
+app.post('/eliminarCliente', async (req, res) => {
+  const resultado = await Seguridad.eliminarCliente(req.body);
+
   if (resultado.success) {
     res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
+  } else {
+    res.status(401).send('No autorizado');
   }
 });
 
 // ================== TURNOS ==================
-app.post('/turnos', (req, res) => {
-  let resultado = Seguridad.dameClientes(req.body);
+app.post('/turnos', async (req, res) => {
+  const resultado = await Seguridad.dameClientes(req.body);
+
   if (resultado.success) {
     res.render('index.ejs', {
       url: BASE_URL,
       token: TOKEN,
       clientes: resultado.clientes
     });
+  } else {
+    res.status(401).send('No autorizado');
   }
 });
 
-app.post('/nuevoturno', (req, res) => {
-  let respuesta = Seguridad.nuevoTurno(req.body);
+app.post('/nuevoturno', async (req, res) => {
+  const respuesta = await Seguridad.nuevoTurno(req.body);
+
   if (respuesta.success) {
     res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
+  } else {
+    res.status(401).send('Error al crear turno');
   }
 });
 
-app.post('/listarturnos', (req, res) => {
-  let resultado = Seguridad.listarTurnos(req.body);
+app.post('/listarturnos', async (req, res) => {
+  const resultado = await Seguridad.listarTurnos(req.body);
+
   if (resultado.success) {
     res.render('listadoturnos.ejs', {
       url: BASE_URL,
       token: TOKEN,
       turnos: resultado.turnos
     });
+  } else {
+    res.status(401).send('No autorizado');
   }
 });
 
-app.post('/eliminarTurno', (req, res) => {
-  let resultado = Seguridad.eliminarTurno(req.body);
+app.post('/eliminarTurno', async (req, res) => {
+  const resultado = await Seguridad.eliminarTurno(req.body);
+
   if (resultado.success) {
     res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
+  } else {
+    res.status(401).send('No autorizado');
   }
 });
 
@@ -125,33 +149,48 @@ app.post('/usuario', (req, res) => {
   res.render('usuario.ejs', { url: BASE_URL, token: TOKEN });
 });
 
-app.post('/nuevousuario', (req, res) => {
-  Seguridad.nuevoUsuario(req.body);
-  res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
+app.post('/nuevousuario', async (req, res) => {
+  const resultado = await Seguridad.nuevoUsuario(req.body);
+
+  if (resultado.success) {
+    res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
+  } else {
+    res.status(401).send('Error al crear usuario');
+  }
 });
 
-app.post('/eliminarusuario', (req, res) => {
-  Seguridad.eliminarUsuario(req.body);
-  res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
+app.post('/eliminarusuario', async (req, res) => {
+  const resultado = await Seguridad.eliminarUsuario(req.body);
+
+  if (resultado.success) {
+    res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
+  } else {
+    res.status(401).send('No autorizado');
+  }
 });
 
-app.post('/usuarios', (req, res) => {
-  let usuarios = Seguridad.dameUsuarios(req.body);
-  res.render('usuarios.ejs', {
-    url: BASE_URL,
-    token: TOKEN,
-    usuarios
-  });
+app.post('/usuarios', async (req, res) => {
+  const resultado = await Seguridad.dameUsuarios(req.body);
+
+  if (resultado.success) {
+    res.render('usuarios.ejs', {
+      url: BASE_URL,
+      token: TOKEN,
+      usuarios: resultado.usuarios
+    });
+  } else {
+    res.status(401).send('No autorizado');
+  }
 });
 
-// ================== TEST DB ==================
+// ================== DEBUG / TEST DB ==================
 app.get('/test-db', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM clientes');
     res.json(result.rows);
   } catch (err) {
-    console.error('Test DB error:', err);
-    res.status(500).send('Error DB');
+    console.error(err);
+    res.status(500).send('DB ERROR');
   }
 });
 

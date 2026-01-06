@@ -1,172 +1,193 @@
-const Clases = require('./clases.js')
-const Modelo = require('./modelo.js');
+const pool = require('./db');
 
+// ================== CLIENTES ==================
 
-function nuevoTurno(data) {
-   try {
-        console.log("--Controlador--");
-        const libre = data.libre === 'libre';
-        if (!data.dia || !data.turno || !data.libre || !data.cliente) {
-            throw new Error("Datos incompletos para crear un turno.");
-        }
-                // Verifica si el turno ya existe
-        const existeTurno = Modelo.getTurnos()
-        if (existeTurno.some(t => String(t.dia) === String(data.dia) && String(t.hora) === String(data.turno))) {
-              console.log("Fecha y turno  ocupado");
-            throw new Error("Fecha y turno  ocupado");
-        }
-        //Expresion regular para extraer los datos del string cliente
-        const extrae = /^(.+?) - DNI: (\d+) - Tel: (\d+)$/;
-        // ^ : ancla inicio de la cadena.
-        ////$ : ancla fin de la cadena.
-        //( ) : grupos de captura (devuelven partes en match[1], match[2], match[3]).
-        //. : cualquier carácter salvo salto de línea.
-        //: uno o más del elemento anterior.
-        //? tras + (.+?) : hace el + "no codicioso" (lazy), toma la menor cantidad posible.
-        //Espacios y guiones " - " : literales que deben coincidir exactamente.
-        //DNI: y Tel: : texto literal que aparece en la cadena.
-        // \d : dígito (0–9).
-        // \d+ : una o más cifras (número de DNI / teléfono).
-        const match = data.cliente.match(extrae);
-        //Si no hay coincidencias tira un error
-        if (!match) {
-            throw new Error("Formato de cliente inválido.");
-        }
-        //Si hay match guardo los datos
-        const nombre = match[1];
-        const dni = match[2];
-        const telefono = match[3];
-        //Creo el cliente y el turno
-        const cliente = new Clases.Cliente(nombre, dni, telefono);
-        const unTurno = new Clases.Turno(data.dia, data.turno, data.libre, cliente);
-        //Imprimo el turno y lo guardo en el modelo
-        console.log(unTurno);
-        Modelo.nuevoTurno(unTurno);
-    } catch (error) {
-        console.error("Error al crear un nuevo turno:", error.message);
-    }
-}
-/*
-function nuevoCliente(data) {
-    try {
-        console.log("--Controlador--");
-        if (!data.nombre || !data.dni || !data.telefono) {
-            throw new Error("Datos incompletos para crear un cliente.");
-        }
-        const unCliente = new Clases.Cliente(data.nombre, data.dni, data.telefono);
-        console.log(unCliente);
-        Modelo.nuevoCliente(unCliente);
-    } catch (error) {
-        console.error("Error en nuevoCliente:", error.message);
-    }
-}*/
+async function nuevoCliente(data) {
+  const { nombre, dni, telefono } = data;
 
-function nuevoCliente(data) {
-    console.log("--Controlador--")
-    const clientesExistentes = Modelo.getClientes();
-    //verifica si el cliente ya existe 
-     if (clientesExistentes.some(cliente => String(cliente.dni) === String(data.dni))) {
-        //compara que el dni del cliente existente sea igual al dni del nuevo cliente
-            console.log("Ya existe un cliente con ese DNI")
-            return { success: false, message:"Ya existe un cliente con ese DNI" };
-        }
-    const unCliente = new Clases.Cliente(data.nombre,data.dni,data.telefono) 
-    //crea el objeto cliente con los datos recibidos
-    console.log(unCliente)
-    Modelo.nuevoCliente(unCliente) //llama a la funcion del modelo
-    return {success: true}
+  if (!nombre || !dni || !telefono) {
+    return { success: false, message: 'Datos incompletos' };
+  }
+
+  // verificar duplicado
+  const existe = await pool.query(
+    'SELECT 1 FROM clientes WHERE dni = $1',
+    [dni]
+  );
+
+  if (existe.rowCount > 0) {
+    return { success: false, message: 'Cliente ya existe' };
+  }
+
+  await pool.query(
+    'INSERT INTO clientes (nombre, dni, telefono) VALUES ($1, $2, $3)',
+    [nombre, dni, telefono]
+  );
+
+  return { success: true };
 }
 
-function dameClientes(data){
-    return Modelo.getClientes()
+async function dameClientes() {
+  const result = await pool.query(
+    'SELECT id, nombre, dni, telefono FROM clientes ORDER BY nombre'
+  );
+  return result.rows;
 }
 
-function eliminarCliente(data){
-    console.log("--Controlador--")
-    const dni = data.dni;
-    if (!dni){
-        console.error("DNI no proporcionado para eliminar cliente.");
-        return { success: false, message: "DNI no proporcionado." };
-    }else{
-        //Elimino el cliente
-        let clientes = Modelo.getClientes()
-        //filtrar por dni usando el operador !== estrictamente distinto al dni proporcionado
-        clientes = clientes.filter(cliente => cliente.dni !== dni)
-        Modelo.setClientes(clientes)//trae a set.clientes p guardar de nuevo el txt
-        console.log(`Cliente con DNI ${dni} eliminado.`);
-        
-        // Eliminar turnos del cliente
-        let turnos = Modelo.getTurnos();
-        turnos = turnos.filter(turno => turno.cliente.dni !== dni);
-        Modelo.setTurnos(turnos);
-        console.log(`Turno con DNI ${dni} eliminado.`);
-        
-        return {success: true}
-    }  
+async function eliminarCliente(data) {
+  const { dni } = data;
+
+  if (!dni) {
+    return { success: false, message: 'DNI requerido' };
+  }
+
+  // borrar turnos primero (FK)
+  await pool.query(
+    `DELETE FROM turnos 
+     WHERE cliente_id = (SELECT id FROM clientes WHERE dni = $1)`,
+    [dni]
+  );
+
+  await pool.query(
+    'DELETE FROM clientes WHERE dni = $1',
+    [dni]
+  );
+
+  return { success: true };
 }
 
-function listarTurnos(data){
-    return Modelo.getTurnos()
+// ================== TURNOS ==================
+
+async function nuevoTurno(data) {
+  const { dia, turno, cliente } = data;
+
+  if (!dia || !turno || !cliente) {
+    return { success: false, message: 'Datos incompletos' };
+  }
+
+  // verificar turno duplicado
+  const existe = await pool.query(
+    'SELECT 1 FROM turnos WHERE dia = $1 AND hora = $2',
+    [dia, turno]
+  );
+
+  if (existe.rowCount > 0) {
+    return { success: false, message: 'Turno ocupado' };
+  }
+
+  // extraer DNI del string
+  const regex = /^(.+?) - DNI: (\d+) - Tel: (\d+)$/;
+  const match = cliente.match(regex);
+
+  if (!match) {
+    return { success: false, message: 'Cliente inválido' };
+  }
+
+  const dni = match[2];
+
+  const clienteDB = await pool.query(
+    'SELECT id FROM clientes WHERE dni = $1',
+    [dni]
+  );
+
+  if (clienteDB.rowCount === 0) {
+    return { success: false, message: 'Cliente no existe' };
+  }
+
+  await pool.query(
+    `INSERT INTO turnos (dia, hora, estado, cliente_id)
+     VALUES ($1, $2, 'ocupado', $3)`,
+    [dia, turno, clienteDB.rows[0].id]
+  );
+
+  return { success: true };
 }
 
+async function listarTurnos() {
+  const result = await pool.query(`
+    SELECT 
+      t.id,
+      t.dia,
+      t.hora,
+      t.estado,
+      c.nombre,
+      c.dni,
+      c.telefono
+    FROM turnos t
+    JOIN clientes c ON c.id = t.cliente_id
+    ORDER BY t.dia, t.hora
+  `);
 
-function eliminarTurno(data){
-    console.log("--Controlador Eliminar Turno--")
-    console.log(data)
-    const dia = data.dia;
-     const hora = data.turno;
-
-    if (!dia || !hora){
-        console.error("Dia u hora no proporcionado para eliminar turno.");
-        return { success: false, message: "Dia y hora no proporcionado." };
-    }else{
-       
-        
-        // Eliminar turno
-        let turnos = Modelo.getTurnos();
-        turnos = turnos.filter(turno => turno.dia !== dia || turno.hora !==hora);
-        Modelo.setTurnos(turnos);
-        console.log(`Turno eliminado.`);
-        
-        return {success: true}
-    }  
+  return result.rows;
 }
 
-//--- USUARIOS ----------------------
+async function eliminarTurno(data) {
+  const { dia, turno } = data;
 
-function nuevoUsuario(data){
-    console.log("--Controlador--")
-    const usuariosExistentes = Modelo.getUsuarios();
-    //verifica si el usuario.contacto ya existe 
-     if (usuariosExistentes.some(usuario => usuario.contacto === data.contacto)) {
-            console.log("Ya existe un usuario con este número de contacto")
-            return { success: false, message:"Ya existe un usuario con ese Contacto" };
-        }
-    const unUsuario = new Clases.Usuario(data.nombre,data.contacto,data.pass,data.rol)
-    console.log(unUsuario)
-    Modelo.nuevoUsuario(unUsuario)
-    return {success: true}
+  if (!dia || !turno) {
+    return { success: false };
+  }
+
+  await pool.query(
+    'DELETE FROM turnos WHERE dia = $1 AND hora = $2',
+    [dia, turno]
+  );
+
+  return { success: true };
 }
 
-function eliminarUsuario(data){
-    console.log("--Controlador eliminarUsuario--");
-    let usuarios = Modelo.getUsuarios(); //leemos el archivo usuarios.txt
-    // convierte el txt en un array de obj usuarios
- // Filtrar por contacto
-    usuarios = usuarios.filter(u => u.contacto !== data.contacto);
-    // solo nos quedamos con contactos que sean distintos a data.cont
-    Modelo.setUsuarios(usuarios);
-    // trae a set.usuarios p guardar de nuevo el txt
-    console.log("holaaaaaaa");
-    return { success: true, usuarios };
+// ================== USUARIOS ==================
 
+async function nuevoUsuario(data) {
+  const { nombre, contacto, pass, rol } = data;
+
+  if (!nombre || !contacto || !pass || !rol) {
+    return { success: false };
+  }
+
+  const existe = await pool.query(
+    'SELECT 1 FROM usuarios WHERE contacto = $1',
+    [contacto]
+  );
+
+  if (existe.rowCount > 0) {
+    return { success: false, message: 'Usuario existente' };
+  }
+
+  await pool.query(
+    `INSERT INTO usuarios (nombre, contacto, pass, rol)
+     VALUES ($1, $2, $3, $4)`,
+    [nombre, contacto, pass, rol]
+  );
+
+  return { success: true };
 }
 
-function dameUsuarios(data){
-    return Modelo.getUsuarios()
+async function eliminarUsuario(data) {
+  await pool.query(
+    'DELETE FROM usuarios WHERE contacto = $1',
+    [data.contacto]
+  );
+  return { success: true };
 }
 
+async function dameUsuarios() {
+  const result = await pool.query(
+    'SELECT id, nombre, contacto, rol FROM usuarios ORDER BY nombre'
+  );
+  return result.rows;
+}
 
+// ================== EXPORTS ==================
 
-module.exports = {nuevoUsuario, eliminarUsuario, dameUsuarios, eliminarCliente, dameClientes, nuevoTurno, nuevoCliente, listarTurnos, eliminarTurno}
-
+module.exports = {
+  nuevoCliente,
+  dameClientes,
+  eliminarCliente,
+  nuevoTurno,
+  listarTurnos,
+  eliminarTurno,
+  nuevoUsuario,
+  eliminarUsuario,
+  dameUsuarios
+};

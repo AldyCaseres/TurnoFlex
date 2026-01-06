@@ -1,118 +1,86 @@
-const Controlador = require('./controlador.js')
+const Controlador = require('./controlador.js');
 
-function nuevoTurno(data){
-    console.log("--seguridad--")
-    console.log(data)
-    if(data.libre == undefined){
-        data.libre = false
-    }else{
-        data.libre = true
-    }
-    console.log(data)
+const TOKEN = 'lkjrt4v3wmtiqoprmmor98';
 
-    if(data.token == "lkjrt4v3wmtiqoprmmor98"){
-        Controlador.nuevoTurno(data)
-        return {success: true}
-    }{
-        return {success: false}
-    }
-} 
+// ================== TURNOS ==================
 
-function nuevoCliente(data){
-    console.log("--seguridad--")
-    console.log("data")
-    console.log(data) //muestra los datos recibidos del formulario
-    if(data.token == 'lkjrt4v3wmtiqoprmmor98'){ //verifica token
-        Controlador.nuevoCliente(data) //llama a la funcion del controlador
-        return {success: true}
-    }else{
-        return {success: false}
-    }
-    
+async function nuevoTurno(data) {
+  if (data.token !== TOKEN) return { success: false };
+
+  data.estado = 'ocupado';
+
+  await Controlador.nuevoTurno(data);
+  return { success: true };
 }
 
-function dameClientes(data){
-    console.log("--seguridad--")
-    console.log("data")
-    console.log(data)
-    if(data.token == 'lkjrt4v3wmtiqoprmmor98'){
-        const clientes = Controlador.dameClientes(data)
-        return {success: true, clientes: clientes}
+async function listarTurnos(data) {
+  if (data.token !== TOKEN) return { success: false };
 
-    }else{
-        console.log("No se puede acceder a los clientes")
-        return {success: false}
-    }
-    
+  const turnos = await Controlador.listarTurnos();
+  return { success: true, turnos };
 }
 
-function eliminarCliente(data){
-    console.log("--seguridad--")
-    console.log(data)
-    if(data.token == 'lkjrt4v3wmtiqoprmmor98'){
-        return Controlador.eliminarCliente(data);
-    }else{
-        return {success: false}
-    }
+async function eliminarTurno(data) {
+  if (data.token !== TOKEN) return { success: false };
+
+  await Controlador.eliminarTurno(data.id);
+  return { success: true };
 }
 
+// ================== CLIENTES ==================
 
-function listarTurnos(data){
-    console.log("--seguridad--")
-    console.log("data")
-    console.log(data)
-    if(data.token == 'lkjrt4v3wmtiqoprmmor98'){
-        const turnos = Controlador.listarTurnos(data)
-        return {success: true, turnos: turnos}
+async function nuevoCliente(data) {
+  if (data.token !== TOKEN) return { success: false };
 
-    }else{
-        console.log("No se puede acceder a los turnos")
-        return {success: false}
-    }
-    
+  await Controlador.nuevoCliente(data);
+  return { success: true };
 }
 
-function eliminarTurno(data){
-    console.log("--seguridad--")
-    console.log(data)
-    if(data.token == 'lkjrt4v3wmtiqoprmmor98'){
-        return Controlador.eliminarTurno(data);
-    }else{
-        return {success: false}
-    }
+async function dameClientes(data) {
+  if (data.token !== TOKEN) return { success: false };
+
+  const clientes = await Controlador.dameClientes();
+  return { success: true, clientes };
 }
 
-//--- USUARIOS --------------------------------
+async function eliminarCliente(data) {
+  if (data.token !== TOKEN) return { success: false };
 
-function nuevoUsuario(data){
-    console.log("--seguridad--")
-    console.log(data)
-    const respuesta = {}
-    if(data.token == 'lkjrt4v3wmtiqoprmmor98'){
-        Controlador.nuevoUsuario(data);
-    }else{
-        return {success: false}
-    }    
+  await Controlador.eliminarCliente(data.id);
+  return { success: true };
 }
 
-function eliminarUsuario(data){
-    console.log("--seguridad--")
-    console.log(data)
-    if(data.token === 'lkjrt4v3wmtiqoprmmor98'){
-        Controlador.eliminarUsuario(data);
-    }else{
-     return {success: false};
-    }    
+// ================== USUARIOS ==================
+
+async function nuevoUsuario(data) {
+  if (data.token !== TOKEN) return { success: false };
+
+  await Controlador.nuevoUsuario(data);
+  return { success: true };
 }
 
-function dameUsuarios(data){
-    console.log("--seguridad--")
-    console.log(data)
-    if(data.token == 'lkjrt4v3wmtiqoprmmor98'){
-        return Controlador.dameUsuarios(data);
-    }else{
-       return {success: false};
-    }    
+async function eliminarUsuario(data) {
+  if (data.token !== TOKEN) return { success: false };
+
+  await Controlador.eliminarUsuario(data.id);
+  return { success: true };
 }
 
-module.exports = {nuevoUsuario, eliminarUsuario, dameUsuarios, eliminarCliente, dameClientes,nuevoTurno, nuevoCliente, listarTurnos, eliminarTurno}
+async function dameUsuarios(data) {
+  if (data.token !== TOKEN) return { success: false };
+
+  const usuarios = await Controlador.dameUsuarios();
+  return { success: true, usuarios };
+}
+
+module.exports = {
+  nuevoTurno,
+  listarTurnos,
+  eliminarTurno,
+  nuevoCliente,
+  dameClientes,
+  eliminarCliente,
+  nuevoUsuario,
+  eliminarUsuario,
+  dameUsuarios
+};
