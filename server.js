@@ -11,7 +11,9 @@ const TOKEN = process.env.APP_TOKEN || "dev-token";
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
-
+ app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
 app.set('view engine', 'ejs');
 
 // ================== LOGIN ==================
