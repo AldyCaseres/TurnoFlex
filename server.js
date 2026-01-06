@@ -153,3 +153,18 @@ const PORT = process.env.PORT;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`TurnoFlex escuchando en puerto ${PORT}`);
 });
+
+
+
+//=================db=======
+const pool = require('./db');
+
+app.get('/test-db', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM clientes');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error DB');
+  }
+});
