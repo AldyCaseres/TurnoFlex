@@ -57,7 +57,6 @@ async function eliminarCliente(data) {
 }
 
 // ================== TURNOS ==================
-
 async function nuevoTurno(data) {
   const { dia, turno, cliente } = data;
 
@@ -65,9 +64,9 @@ async function nuevoTurno(data) {
     return { success: false, message: 'Datos incompletos' };
   }
 
-  // verificar turno duplicado
+  // 1. Verificar turno duplicado - CAMBIADO 'hora' por 'turno'
   const existe = await pool.query(
-    'SELECT 1 FROM turnos WHERE dia = $1 AND hora = $2',
+    'SELECT 1 FROM turnos WHERE dia = $1 AND turno = $2',
     [dia, turno]
   );
 
@@ -94,8 +93,9 @@ async function nuevoTurno(data) {
     return { success: false, message: 'Cliente no existe' };
   }
 
+  // 2. Insertar - CAMBIADO 'hora' por 'turno'
   await pool.query(
-    `INSERT INTO turnos (dia, hora, estado, cliente_id)
+    `INSERT INTO turnos (dia, turno, estado, cliente_id)
      VALUES ($1, $2, 'ocupado', $3)`,
     [dia, turno, clienteDB.rows[0].id]
   );
