@@ -43,7 +43,7 @@ body, html {
 
 /* Estilo personalizado para el botón "Iniciar sesión" */
 .btn-custom-login {
-    background-color: #0b5406; 
+    background-color: #13b60e; 
     color: white; 
     border: none; 
     height: 60px; 
@@ -52,7 +52,7 @@ body, html {
 }
 
 .btn-custom-login:hover {
-    background-color: #004801; 
+    background-color: #7a7a7a; 
     color: white;
     border: none;
 }

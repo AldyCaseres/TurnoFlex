@@ -31,7 +31,7 @@ body {
 
 /* === CABECERA PRINCIPAL (Para todas las páginas con título grande) === */
 .titulo-header {
-  background-color: #1b3b1a;
+  background-color: #b7b6b6;
   padding: 60px 20px; /* Padding vertical y horizontal base */
   margin-bottom: 30px;
   text-align: center; /* Centra el texto h1 */
@@ -104,7 +104,7 @@ body {
 
 .registro-container form input:focus,
 .registro-container form select:focus {
-  outline: 2px solid #1b3b1a;
+  outline: 2px solid #0d0594;
 }
 
 .registro-container form label {
@@ -134,7 +134,7 @@ body {
 }
 
 .registro-container table th {
-  background-color: #1b3b1a;
+  background-color: #13b60e;
   color: white;
   font-weight: bold;
   text-transform: uppercase;
@@ -172,7 +172,7 @@ body {
 /* === BOTÓN PRINCIPAL (Registrar / Agregar Turno / Eliminar/Cancelar) === */
 .btn-registrar {
   width: 100%;
-  background-color: #1b3b1a;
+  background-color: #13b60e;
   color: white;
   border: none;
   padding: 12px;
@@ -186,7 +186,7 @@ body {
 }
 
 .btn-registrar:hover {
-  background-color: #264d27;
+  background-color: #727272;
 }
 
 /* ESTILOS ESPECÍFICOS PARA LOS BOTONES DE ACCIÓN DENTRO DE LA TABLA (Eliminar/Cancelar) */
@@ -213,7 +213,7 @@ body {
   border: 2px solid #1b3b1a;
   border-radius: 8px;
   background-color: #ffffff;
-  color: #1b3b1a;
+  color: #13b60e;
   text-decoration: none;
   font-weight: bold;
   transition: background-color 0.3s, color 0.3s;
@@ -222,7 +222,7 @@ body {
 }
 
 .btn-volver:hover {
-  background-color: #1b3b1a;
+  background-color: #7b7b7b;
   color: white;
 }
 
