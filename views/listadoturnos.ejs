@@ -33,13 +33,13 @@
         <tr style="text-align:center;">
           <td><%= i + 1 %></td>
           <td><%= turnos[i].dia %></td>
-          <td><%= turnos[i].hora %></td>
+          <td><%= turnos[i].turno %></td>
           <td><%= turnos[i].cliente.nombre %></td>
           <td>
             <form action="/eliminarTurno" method="post" style="margin: 0;">
               <input type="hidden" name="token" value="<%= token %>">
               <input type="hidden" name="dia" value="<%= turnos[i].dia %>">
-              <input type="hidden" name="turno" value="<%= turnos[i].hora %>">
+              <input type="hidden" name="turno" value="<%= turnos[i].turno %>">
               <button type="submit" class="btn-registrar" style="font-size: 14px;" onclick="return confirmarEliminacion()">Eliminar</button>
             </form>
           </td>

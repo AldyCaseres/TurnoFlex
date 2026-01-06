@@ -108,14 +108,14 @@ async function listarTurnos() {
     SELECT 
       t.id,
       t.dia,
-      t.hora,
+      t.turno,
       t.estado,
       c.nombre,
       c.dni,
       c.telefono
     FROM turnos t
     JOIN clientes c ON c.id = t.cliente_id
-    ORDER BY t.dia, t.hora
+    ORDER BY t.dia, t.turno
   `);
 
   return result.rows;
