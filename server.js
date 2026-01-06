@@ -148,7 +148,8 @@ app.post('/logout', (req, res) => {
 });
 
 // ================== SERVER ==================
-const PORT = process.env.PORT || 3050;
-app.listen(PORT, () => {
-  console.log("TurnoFlex corriendo en:", BASE_URL);
+const PORT = process.env.PORT;
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`TurnoFlex escuchando en puerto ${PORT}`);
 });
