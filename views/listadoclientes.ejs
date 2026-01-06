@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listado de Clientes</title>
+  <link rel="stylesheet" href="/style/registrarcli.css">
+</head>
+<body>
+
+  <div class="logo-container">
+    <img src="/style/logo.png" alt="Logo Mini Futbol" class="logo-img">
+  </div>
+
+  <div class="titulo-header text-center">
+    <h1>Listado de Clientes</h1>
+  </div>
+
+  <div class="registro-container">
+    <table style="width:100%; border-collapse: collapse;">
+      <thead>
+        <tr style="background-color:#1b3b1a; color:white;">
+          <th style="padding: 10px;">Nro Cliente</th>
+          <th style="padding: 10px;">Nombre</th>
+          <th style="padding: 10px;">DNI</th>
+          <th style="padding: 10px;">Teléfono</th>
+          <th style="padding: 10px;">Eliminar</th>
+        </tr>
+      </thead>
+      <tbody>
+      <% for (let i = 0; i < clientes.length; i++) { 
+     if (clientes[i]) { %>
+  <tr style="text-align:center;">
+    <td><%= i+1 %></td>
+    <td><%= clientes[i].nombre %></td>
+    <td><%= clientes[i].dni %></td>
+    <td><%= clientes[i].telefono %></td>
+    <td>
+      <form action="/eliminarCliente" method="post" style="margin: 0;">
+        <input type="hidden" name="token" value="<%= token %>">
+        <input type="hidden" name="dni" value="<%= clientes[i].dni %>">
+        <button type="submit" class="btn-registrar" style="font-size: 14px;" onclick="return confirmarEliminacion()">Eliminar</button>
+      </form>
+    </td>
+  </tr>
+<%   } 
+   } %>
+
+      </tbody>
+    </table>
+
+    <br>
+
+  </div>
+  <form action="<%= url %>/menuGeneral" method="POST" class="text-center">
+      <input type="hidden" name="token" value="<%= token %>">
+      <button type="submit" class="btn-volver">Volver</button>
+    </form>
+
+
+
+    <Script>
+        function confirmarEliminacion(){
+            return confirm("¿Estas seguro que quieres eliminar este Cliente?")
+        }
+    </Script>
+    
+</body>
+</html>

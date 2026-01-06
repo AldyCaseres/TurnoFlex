@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/style/registrarcli.css">
+    <title>Listado Turnos</title>
+</head>
+<body>
+<div class="logo-container">
+    <img src="/style/logo.png" alt="Logo Mini Futbol" class="logo-img">
+  </div>
+
+  <div class="titulo-header text-center">
+    <h1>Lista de turnos</h1>
+  </div>
+
+<div class="registro-container">
+  <table style="width:100%; border-collapse: collapse;">
+    <thead>
+      <tr style="background-color:#1b3b1a; color:white;">
+        <th style="padding: 10px;">N° de lista</th>
+        <th style="padding: 10px;">Día</th>
+        <th style="padding: 10px;">N° de Turno</th>
+        <th style="padding: 10px;">Cliente</th>
+        <th style="padding: 10px;">Eliminar</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% for (let i = 0; i < turnos.length; i++) { 
+         if (turnos[i] && turnos[i].cliente) { %>
+        <tr style="text-align:center;">
+          <td><%= i + 1 %></td>
+          <td><%= turnos[i].dia %></td>
+          <td><%= turnos[i].hora %></td>
+          <td><%= turnos[i].cliente.nombre %></td>
+          <td>
+            <form action="/eliminarTurno" method="post" style="margin: 0;">
+              <input type="hidden" name="token" value="<%= token %>">
+              <input type="hidden" name="dia" value="<%= turnos[i].dia %>">
+              <input type="hidden" name="turno" value="<%= turnos[i].hora %>">
+              <button type="submit" class="btn-registrar" style="font-size: 14px;" onclick="return confirmarEliminacion()">Eliminar</button>
+            </form>
+          </td>
+        </tr>
+      <% } } %>
+    </tbody>
+  </table>
+
+  <br>
+</div>
+    <form action="<%= url %>/menuGeneral" method="POST" class="text-center">
+      <input type="hidden" name="token" value="<%= token %>">
+      <button type="submit" class="btn-volver">Volver</button>
+    </form>
+    
+
+    <Script>
+        function confirmarEliminacion(){
+            return confirm("¿Estas seguro que quieres eliminar este Turno?")
+        }
+    </Script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregar Turno</title>
+    <link rel="stylesheet" href="/style/registrarcli.css">
+    </head>
+<body>
+
+    <div class="logo-container">
+        <img src="/style/logo.png" alt="Logo Mini Futbol" class="logo-img">
+    </div>
+
+    <div class="titulo-header">
+        <h1>Registrar Turno</h1> 
+        </div>
+
+    <div class="registro-container">
+        <form action='<%=url%>/nuevoturno' method="POST">
+            <p>
+                <label for="dia">Día:</label>
+                <input type="date" id="dia" name="dia" required> </p>
+            <p>
+                <label for="turno">Turno:</label>
+                <input type="number" id="turno" name="turno" required> </p>
+                <p><input type="hidden" name="libre" value="ocupado"></p>
+            <!--  <p>
+                <label for="estado">Estado:</label>
+                <select id="estado" name="libre" required>
+                    <option value="libre">Libre</option>
+                    <option value="ocupado">Ocupado</option>
+                </select>
+            </p>-->
+            <p>
+                <label for="cliente">Cliente:</label>
+                <input type="text" id="cliente" name="cliente" list="clienteList" placeholder="Nombre" required>
+                <datalist id="clienteList"> <% for (let i = 0; i < clientes.length; i++) { %>
+                        <option value="<%= clientes[i].nombre %> - DNI: <%= clientes[i].dni %> - Tel: <%= clientes[i].telefono %>">
+                    <% } %>
+                </datalist>
+            </p>
+            <input type="hidden" name="token" value="<%=token%>"> <button type="submit" class="btn-registrar">Agregar Turno</button> </form>
+
+        <br>
+
+        <form action="<%=url%>/menuGeneral" method="POST" class="text-center">
+            <input type="hidden" name="token" value="<%=token%>">
+            <button type="submit" class="btn-volver">Volver</button> </form>
+
+
+</body>
+</html>

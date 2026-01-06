@@ -1,0 +1,235 @@
+/* === GENERALES === */
+body {
+  background-color: #f8f9fa;
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  overflow-x: hidden; /* Evita el scroll horizontal general */
+}
+
+/* ==================== LOGO SUPERIOR IZQUIERDO ==================== */
+/* Este estilo posiciona el logo de forma absoluta en la esquina superior izquierda */
+.logo-container {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1000; /* Asegura que esté por encima de todo */
+  padding: 0 !important;
+}
+
+.logo-img {
+  height: 50px; /* Tamaño inicial del logo */
+  width: auto;
+  display: block;
+}
+
+/* Logo aún más pequeño en móviles */
+@media (max-width: 575.98px) {
+  .logo-img {
+    height: 20px;
+  }
+}
+
+/* === CABECERA PRINCIPAL (Para todas las páginas con título grande) === */
+.titulo-header {
+  background-color: #1b3b1a;
+  padding: 60px 20px; /* Padding vertical y horizontal base */
+  margin-bottom: 30px;
+  text-align: center; /* Centra el texto h1 */
+  color: white; /* Color del texto del título */
+  position: relative;
+}
+
+.titulo-header h1 {
+  font-size: 48px;
+  margin: 0;
+  font-weight: bold;
+  letter-spacing: 1px;
+  line-height: 1.2;
+}
+
+/* Media Queries para el Título del Header */
+@media (max-width: 768px) {
+  .titulo-header {
+    padding: 40px 15px;
+  }
+  .titulo-header h1 {
+    font-size: 38px;
+  }
+}
+
+@media (max-width: 576px) {
+  .titulo-header {
+    padding: 30px 10px;
+  }
+  .titulo-header h1 {
+    font-size: 30px;
+  }
+}
+
+/* === CONTENEDOR PRINCIPAL DEL FORMULARIO / TABLA === */
+.registro-container {
+  background-color: #ffffff;
+  max-width: 900px; /* Ancho máximo adecuado para formulario y tabla */
+  margin: 30px auto;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0,0,0,0.1);
+  width: 95%; /* Ocupa un porcentaje del ancho para responsividad */
+  box-sizing: border-box;
+  /* === CAMBIO CLAVE: Permite el scroll horizontal para tablas aquí === */
+  overflow-x: auto;
+}
+
+/* Ajustes para el contenedor en pantallas más pequeñas */
+@media (max-width: 480px) {
+  .registro-container {
+    padding: 15px;
+    margin: 20px auto;
+  }
+}
+
+/* === ESTILOS PARA INPUTS DE FORMULARIO === */
+.registro-container form input,
+.registro-container form select {
+  display: block;
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  background-color: #e9e9e9;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.registro-container form input:focus,
+.registro-container form select:focus {
+  outline: 2px solid #1b3b1a;
+}
+
+.registro-container form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* === ESTILOS DE LA TABLA (COMPARTIDOS PARA CLIENTES Y TURNOS) === */
+.registro-container table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  /* === CAMBIO CLAVE: Mantenemos un ancho mínimo para forzar el scroll si es necesario === */
+  min-width: 600px; /* Puedes ajustar este valor si tus columnas son más anchas */
+}
+
+/* Estilos por defecto para th y td */
+.registro-container table th,
+.registro-container table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+  font-size: 16px;
+  white-space: nowrap; /* Impide que el contenido se envuelva, permitiendo el scroll */
+}
+
+.registro-container table th {
+  background-color: #1b3b1a;
+  color: white;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.registro-container table tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.registro-container table tbody tr:hover {
+  background-color: #e0e0e0;
+}
+
+/* === REMOVIDAS: Media Queries para transformar la tabla en responsiva (sin scroll horizontal) === */
+/* Estas reglas han sido eliminadas para permitir el scroll horizontal nuevamente. */
+
+/* Media Queries generales para tabla (ajuste de padding/fuente) */
+@media (max-width: 768px) {
+  .registro-container table th,
+  .registro-container table td {
+    padding: 10px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 576px) {
+  .registro-container table th,
+  .registro-container table td {
+    padding: 8px;
+    font-size: 12px;
+  }
+}
+
+
+/* === BOTÓN PRINCIPAL (Registrar / Agregar Turno / Eliminar/Cancelar) === */
+.btn-registrar {
+  width: 100%;
+  background-color: #1b3b1a;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+  box-sizing: border-box;
+  margin-top: 20px;
+}
+
+.btn-registrar:hover {
+  background-color: #264d27;
+}
+
+/* ESTILOS ESPECÍFICOS PARA LOS BOTONES DE ACCIÓN DENTRO DE LA TABLA (Eliminar/Cancelar) */
+.registro-container table .btn-registrar {
+  width: auto;
+  padding: 8px 12px;
+  font-size: 14px;
+  background-color: #dc3545; /* Rojo para acción de eliminación/cancelación */
+  margin-top: 0;
+  display: inline-block;
+}
+
+.registro-container table .btn-registrar:hover {
+  background-color: #c82333;
+}
+
+.btn-volver {
+  display: block;
+  width: 100%;
+  max-width: 200px; /* Limita el ancho máximo en pantallas grandes */
+  margin: 20px auto; /* Centra el botón Volver */
+  text-align: center;
+  padding: 10px 20px;
+  border: 2px solid #1b3b1a;
+  border-radius: 8px;
+  background-color: #ffffff;
+  color: #1b3b1a;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background-color 0.3s, color 0.3s;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.btn-volver:hover {
+  background-color: #1b3b1a;
+  color: white;
+}
+
+/* Estilos para el texto de cerrar sesión (si se usa en alguna página) */
+.logout-btn {
+  color: #7c7c7c;
+  text-align: center;
+  margin-top: 2rem;
+  font-size: 0.9rem;
+}
