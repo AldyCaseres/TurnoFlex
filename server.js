@@ -1,7 +1,9 @@
 const express = require('express');
 const path = require('path');
 const app = express();
+
 const Seguridad = require('./seguridad.js');
+const pool = require('./db');
 
 // ================== CONFIGURACIÓN GLOBAL ==================
 const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
@@ -11,10 +13,18 @@ const TOKEN = process.env.APP_TOKEN || "dev-token";
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
- app.get('/health', (req, res) => {
-  res.status(200).send('OK');
-});
 app.set('view engine', 'ejs');
+
+// ================== HEALTHCHECK REAL (DB) ==================
+app.get('/health', async (req, res) => {
+  try {
+    await pool.query('SELECT 1');
+    res.status(200).send('DB OK');
+  } catch (err) {
+    console.error('Health DB error:', err);
+    res.status(500).send('DB ERROR');
+  }
+});
 
 // ================== LOGIN ==================
 app.get('/', (req, res) => {
@@ -134,41 +144,25 @@ app.post('/usuarios', (req, res) => {
   });
 });
 
-// ================== VOLVER ==================
-app.post('/volver', (req, res) => {
-  res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
+// ================== TEST DB ==================
+app.get('/test-db', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM clientes');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Test DB error:', err);
+    res.status(500).send('Error DB');
+  }
 });
-
-// ================== ESTILOS ==================
-app.use('/public/style', express.static(path.join(__dirname, 'style')));
 
 // ================== LOGOUT ==================
 app.post('/logout', (req, res) => {
   res.redirect('/login');
 });
 
-
-
-//=================db=======
-const pool = require('./db');
-
-app.get('/test-db', async (req, res) => {
-  try {
-    const result = await pool.query('SELECT * FROM clientes');
-    res.json(result.rows);
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error DB');
-  }
-});
-
 // ================== SERVER ==================
-const PORT = process.env.PORT;
+const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`TurnoFlex escuchando en puerto ${PORT}`);
 });
-
-
-
-
