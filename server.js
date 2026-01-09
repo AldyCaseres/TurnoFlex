@@ -46,6 +46,16 @@ app.get('/', async (req, res) => {
   }
 });
 
+app.post('/crearTurnos', (req, res) => {
+  if (req.body.token !== TOKEN) {
+    return res.status(401).send('No autorizado');
+  }
+
+  res.render('crearTurnos.ejs', {
+    url: BASE_URL,
+    token: TOKEN
+  });
+});
 
 
 // ================== LOGIN ==================
