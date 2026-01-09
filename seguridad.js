@@ -84,6 +84,14 @@ async function ocuparTurno(data) {
   return Controlador.ocuparTurno(data);
 }
 
+async function crearHorario(data) {
+  if (data.token !== 'lkjrt4v3wmtiqoprmmor98') {
+    return { success: false };
+  }
+
+  return await Controlador.crearHorario(data);
+}
+
 module.exports = {
   nuevoTurno,
   listarTurnos,
@@ -95,5 +103,6 @@ module.exports = {
   eliminarUsuario,
   dameUsuarios, 
   crearTurnoLibre,
-  ocuparTurno
+  ocuparTurno,
+  crearHorario
 };
