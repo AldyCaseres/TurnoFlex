@@ -89,23 +89,24 @@
 <div class="schedule">
 
   <% for (const dia in turnosPorDia) { %>
-    <div class="day-column">
-      <div class="day-title">
-        <%= new Date(dia).toLocaleDateString('es-AR', {
-          weekday: 'long',
-          day: 'numeric',
-          month: 'numeric'
-        }) %>
-      </div>
-
-      <% turnosPorDia[dia].forEach(turno => { %>
-        <div class="slot <%= turno.estado === 'libre' ? 'libre' : 'ocupado' %>">
-          <%= turno.hora_inicio.slice(0,5) %> - <%= turno.hora_fin.slice(0,5) %>
-        </div>
-      <% }) %>
-
+  <div class="day-column">
+    <div class="day-title">
+      <%= new Date(dia).toLocaleDateString('es-AR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'numeric'
+      }) %>
     </div>
-  <% } %>
+
+    <% turnosPorDia[dia].forEach(turno => { %>
+      <div class="slot <%= turno.estado === 'libre' ? 'libre' : 'ocupado' %>">
+        <%= turno.turno %>:00 HS
+      </div>
+    <% }) %>
+
+  </div>
+<% } %>
+
 
 </div>
 

@@ -32,44 +32,39 @@ app.get('/health', async (req, res) => {
 
 // HOME PUBLICA - SOLO LECTURA
 app.get('/', async (req, res) => {
-  const result = await pool.query(`
-    SELECT dia, hora_inicio, hora_fin, estado
-    FROM turnos
-    ORDER BY dia, hora_inicio
-  `);
-
-  // Agrupar por día
-  const turnosPorDia = {};
-  result.rows.forEach(t => {
-    if (!turnosPorDia[t.dia]) {
-      turnosPorDia[t.dia] = [];
-    }
-    turnosPorDia[t.dia].push(t);
-  });
-
-  res.render('home.ejs', { turnosPorDia });
-});
-
-app.post('/crearHorarios', (req, res) => {
-  res.render('crearHorarios.ejs', {
-    token: req.body.token
-  });
-});
-
-app.post('/crear-horarios', async (req, res) => {
-  const { dia, hora_inicio, hora_fin } = req.body;
-
   try {
-    await pool.query(
-      `INSERT INTO turnos (dia, hora_inicio, hora_fin, estado)
-       VALUES ($1, $2, $3, 'libre')`,
-      [dia, hora_inicio, hora_fin]
-    );
+    const result = await pool.query(`
+      SELECT dia, turno, estado
+      FROM turnos
+      ORDER BY dia, turno
+    `);
 
-    res.redirect('/menuGeneral');
+    const turnosPorDia = {};
+
+    result.rows.forEach(t => {
+      const diaKey = t.dia.toISOString().split('T')[0];
+
+      if (!turnosPorDia[diaKey]) {
+        turnosPorDia[diaKey] = [];
+      }
+
+      turnosPorDia[diaKey].push(t);
+    });
+
+    res.render('home.ejs', { turnosPorDia });
   } catch (err) {
-    console.error(err);
-    res.status(500).send('Error al crear horario');
+    console.error('HOME ERROR:', err);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+app.post('/crear-horario', async (req, res) => {
+  const r = await Seguridad.crearHorario(req.body);
+
+  if (r.success) {
+    res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
+  } else {
+    res.send('Error al crear horario');
   }
 });
 

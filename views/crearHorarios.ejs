@@ -14,28 +14,23 @@
 
       <h4 class="text-center mb-4">Habilitar horarios</h4>
 
-      <form action="/crear-horarios" method="POST">
-        <input type="hidden" name="token" value="<%= token %>">
+      <form action="/crear-horario" method="POST">
+  <input type="hidden" name="token" value="<%=token%>">
 
-        <div class="mb-3">
-          <label>Día</label>
-          <input type="date" name="dia" class="form-control" required>
-        </div>
+  <label>Día</label>
+  <input type="date" name="dia" required>
 
-        <div class="mb-3">
-          <label>Hora inicio</label>
-          <input type="time" name="hora_inicio" class="form-control" required>
-        </div>
+  <label>Hora</label>
+  <select name="turno">
+    <option value="20">20 HS</option>
+    <option value="21">21 HS</option>
+    <option value="22">22 HS</option>
+    <option value="23">23 HS</option>
+  </select>
 
-        <div class="mb-3">
-          <label>Hora fin</label>
-          <input type="time" name="hora_fin" class="form-control" required>
-        </div>
+  <button type="submit">Agregar horario</button>
+</form>
 
-        <div class="d-grid">
-          <button class="btn btn-primary">Agregar bloque horario</button>
-        </div>
-      </form>
 
     </div>
   </div>

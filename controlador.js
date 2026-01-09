@@ -136,26 +136,28 @@ async function eliminarTurno(data) {
   return { success: true };
 }
 
-async function crearTurnoLibre(data) {
+
+async function crearHorario(data) {
   const { dia, turno } = data;
 
-  await pool.query(`
-    INSERT INTO turnos (dia, turno, estado)
-    VALUES ($1, $2, 'libre')
-  `, [dia, turno]);
+  if (!dia || !turno) {
+    return { success: false };
+  }
 
-  return { success: true };
-}
-async function ocuparTurno(data) {
-  const { turno_id, cliente_id } = data;
+  const existe = await pool.query(
+    'SELECT 1 FROM turnos WHERE dia = $1 AND turno = $2',
+    [dia, turno]
+  );
 
-  await pool.query(`
-    UPDATE turnos
-    SET estado = 'ocupado',
-        cliente_id = $1
-    WHERE id = $2
-      AND estado = 'libre'
-  `, [cliente_id, turno_id]);
+  if (existe.rowCount > 0) {
+    return { success: false };
+  }
+
+  await pool.query(
+    `INSERT INTO turnos (dia, turno, estado)
+     VALUES ($1, $2, 'libre')`,
+    [dia, turno]
+  );
 
   return { success: true };
 }
@@ -212,6 +214,7 @@ module.exports = {
   nuevoTurno,
   listarTurnos,
   eliminarTurno,
+  crearHorario,
   nuevoUsuario,
   eliminarUsuario,
   dameUsuarios
