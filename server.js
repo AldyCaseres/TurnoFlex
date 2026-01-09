@@ -58,7 +58,7 @@ app.get('/', async (req, res) => {
   }
 });
 
-app.post('/crear-horario', async (req, res) => {
+app.post('/crearHorario', async (req, res) => {
   const r = await Seguridad.crearHorario(req.body);
 
   if (r.success) {
