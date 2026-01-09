@@ -37,7 +37,7 @@ async function initDB() {
         id SERIAL PRIMARY KEY,
         dia DATE NOT NULL,
         turno INTEGER NOT NULL,
-        estado VARCHAR(20) NOT NULL,
+        estado VARCHAR(20) NOT NULL DEFAULT 'Libre',
         cliente_id INTEGER NOT NULL,
         creado_en TIMESTAMP DEFAULT NOW(),
         CONSTRAINT fk_cliente

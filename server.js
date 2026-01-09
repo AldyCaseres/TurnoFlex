@@ -30,13 +30,27 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// ================== LOGIN ==================
-app.get('/', (req, res) => {
-  res.render('login.ejs', { url: BASE_URL, token: TOKEN });
+// HOME PUBLICA - SOLO LECTURA
+app.get('/', async (req, res) => {
+  try {
+    const { rows } = await pool.query(`
+      SELECT dia, turno, estado
+      FROM turnos
+      ORDER BY dia, turno
+    `);
+
+    res.render('home.ejs', { turnos: rows });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error cargando turnos');
+  }
 });
 
+
+
+// ================== LOGIN ==================
 app.get('/login', (req, res) => {
-  res.redirect('/');
+  res.render('login.ejs', { url: BASE_URL, token: TOKEN });
 });
 
 app.post('/menu', (req, res) => {
@@ -141,6 +155,16 @@ app.post('/eliminarTurno', async (req, res) => {
     res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
   } else {
     res.status(401).send('No autorizado');
+  }
+});
+
+app.post('/ocuparTurno', async (req, res) => {
+  const respuesta = await Seguridad.ocuparTurno(req.body);
+
+  if (respuesta.success) {
+    res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
+  } else {
+    res.status(400).send(respuesta.message || 'No se pudo ocupar el turno');
   }
 });
 

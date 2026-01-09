@@ -72,6 +72,17 @@ async function dameUsuarios(data) {
   const usuarios = await Controlador.dameUsuarios();
   return { success: true, usuarios };
 }
+async function crearTurnoLibre(data) {
+  if (data.token !== TOKEN) return { success: false };
+
+  return Controlador.crearTurnoLibre(data);
+}
+
+async function ocuparTurno(data) {
+  if (data.token !== TOKEN) return { success: false };
+
+  return Controlador.ocuparTurno(data);
+}
 
 module.exports = {
   nuevoTurno,
@@ -82,5 +93,7 @@ module.exports = {
   eliminarCliente,
   nuevoUsuario,
   eliminarUsuario,
-  dameUsuarios
+  dameUsuarios, 
+  crearTurnoLibre,
+  ocuparTurno
 };

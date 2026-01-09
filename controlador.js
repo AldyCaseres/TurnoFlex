@@ -136,6 +136,31 @@ async function eliminarTurno(data) {
   return { success: true };
 }
 
+async function crearTurnoLibre(data) {
+  const { dia, turno } = data;
+
+  await pool.query(`
+    INSERT INTO turnos (dia, turno, estado)
+    VALUES ($1, $2, 'libre')
+  `, [dia, turno]);
+
+  return { success: true };
+}
+async function ocuparTurno(data) {
+  const { turno_id, cliente_id } = data;
+
+  await pool.query(`
+    UPDATE turnos
+    SET estado = 'ocupado',
+        cliente_id = $1
+    WHERE id = $2
+      AND estado = 'libre'
+  `, [cliente_id, turno_id]);
+
+  return { success: true };
+}
+
+
 // ================== USUARIOS ==================
 
 async function nuevoUsuario(data) {
