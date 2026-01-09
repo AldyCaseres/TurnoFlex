@@ -32,29 +32,45 @@ app.get('/health', async (req, res) => {
 
 // HOME PUBLICA - SOLO LECTURA
 app.get('/', async (req, res) => {
-  try {
-    const { rows } = await pool.query(`
-      SELECT dia, turno, estado
-      FROM turnos
-      ORDER BY dia, turno
-    `);
+  const result = await pool.query(`
+    SELECT dia, hora_inicio, hora_fin, estado
+    FROM turnos
+    ORDER BY dia, hora_inicio
+  `);
 
-    res.render('home.ejs', { turnos: rows });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error cargando turnos');
-  }
+  // Agrupar por día
+  const turnosPorDia = {};
+  result.rows.forEach(t => {
+    if (!turnosPorDia[t.dia]) {
+      turnosPorDia[t.dia] = [];
+    }
+    turnosPorDia[t.dia].push(t);
+  });
+
+  res.render('home.ejs', { turnosPorDia });
 });
 
-app.post('/crearTurnos', (req, res) => {
-  if (req.body.token !== TOKEN) {
-    return res.status(401).send('No autorizado');
-  }
-
-  res.render('crearTurnos.ejs', {
-    url: BASE_URL,
-    token: TOKEN
+app.post('/crearHorarios', (req, res) => {
+  res.render('crearHorarios.ejs', {
+    token: req.body.token
   });
+});
+
+app.post('/crear-horarios', async (req, res) => {
+  const { dia, hora_inicio, hora_fin } = req.body;
+
+  try {
+    await pool.query(
+      `INSERT INTO turnos (dia, hora_inicio, hora_fin, estado)
+       VALUES ($1, $2, $3, 'libre')`,
+      [dia, hora_inicio, hora_fin]
+    );
+
+    res.redirect('/menuGeneral');
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error al crear horario');
+  }
 });
 
 
