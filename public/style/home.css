@@ -16,6 +16,11 @@ body {
   justify-content: space-between;
 }
 
+.logo {
+  font-weight: bold;
+  color: rgb(47, 11, 165);
+  font-size: 18px;
+}
 
 .titulo {
   font-size: 20px;
@@ -27,17 +32,6 @@ body {
   text-decoration: none;
   font-size: 22px;
   color: white;
-}
-.logo-container {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  z-index: 10;
-}
-
-.logo-img {
-  height: 80px;
-  width: auto;
 }
 
 /* ==================== BARRA DE SEMANA ==================== */
@@ -141,4 +135,17 @@ body {
   .titulo {
     font-size: 16px;
   }
+
+  
+}
+.logo-container {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+}
+
+.logo-img {
+  height: 80px;
+  width: auto;
 }

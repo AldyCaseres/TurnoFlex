@@ -14,14 +14,14 @@
 
       <h4 class="text-center mb-4">Habilitar horarios</h4>
 
-      <form action="/crearHorario" method="POST">
+      <form action="/guardarHorario" method="POST">
   <input type="hidden" name="token" value="<%=token%>">
 
   <label>Día</label>
   <input type="date" name="dia" required>
 
   <label>Hora</label>
-  <select name="turno">
+  <select name="turno" required>
     <option value="20">20 HS</option>
     <option value="21">21 HS</option>
     <option value="22">22 HS</option>

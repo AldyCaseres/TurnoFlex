@@ -58,19 +58,23 @@ app.get('/', async (req, res) => {
   }
 });
 
-app.post('/crearHorario', async (req, res) => {
+app.get('/crearHorario', (req, res) => {
+  res.render('crearHorarios.ejs', {
+    token: TOKEN
+  });
+});
+
+
+app.post('/guardarHorario', async (req, res) => {
   const r = await Seguridad.crearHorario(req.body);
 
   if (r.success) {
-    res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
+    res.redirect('/menuGeneral');
   } else {
     res.send('Error al crear horario');
   }
 });
 
-app.get('/crearHorario', (req, res) => {
-  res.render('crearHorarios.ejs', { token: TOKEN });
-});
 
 
 // ================== LOGIN ==================
