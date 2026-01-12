@@ -68,6 +68,10 @@ app.post('/crearHorario', async (req, res) => {
   }
 });
 
+app.get('/crearHorario', (req, res) => {
+  res.render('crearHorarios.ejs', { token: TOKEN });
+});
+
 
 // ================== LOGIN ==================
 app.get('/login', (req, res) => {
