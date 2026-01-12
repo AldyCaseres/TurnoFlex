@@ -103,6 +103,6 @@ module.exports = {
   eliminarUsuario,
   dameUsuarios, 
   crearTurnoLibre,
-  ocuparTurno,
-  crearHorario
+  crearHorario,
+  ocuparTurno
 };
