@@ -33,6 +33,17 @@ body {
   font-size: 22px;
   color: white;
 }
+.logo-container {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+}
+
+.logo-img {
+  height: 80px;
+  width: auto;
+}
 
 /* ==================== BARRA DE SEMANA ==================== */
 .week-bar {

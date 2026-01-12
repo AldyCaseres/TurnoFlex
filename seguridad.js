@@ -1,5 +1,6 @@
 const Controlador = require('./controlador.js');
-const TOKEN = process.env.APP_TOKEN || 'dev-token';
+
+const TOKEN = 'lkjrt4v3wmtiqoprmmor98';
 
 // ================== TURNOS ==================
 
