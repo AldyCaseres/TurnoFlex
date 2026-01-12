@@ -1,14 +1,16 @@
+/* ==================== GENERALES ==================== */
 body {
   margin: 0;
-  background: #1b1b1b;
-  font-family: Arial, sans-serif;
-  color: white;
+  padding: 0;
+  background-color: #f8f9fa;
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
 }
 
-/* ===== TOP BAR ===== */
+/* ==================== TOP BAR ==================== */
 .top-bar {
-  background: #1f3b1c;
-  padding: 12px 16px;
+  background-color: #b7b6b6;
+  padding: 14px 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -16,64 +18,73 @@ body {
 
 .logo {
   font-weight: bold;
+  color: rgb(47, 11, 165);
+  font-size: 18px;
 }
 
 .titulo {
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
+  color: white;
 }
 
 .user-icon {
   text-decoration: none;
+  font-size: 22px;
   color: white;
-  font-size: 20px;
 }
 
-/* ===== SEMANA ===== */
+/* ==================== BARRA DE SEMANA ==================== */
 .week-bar {
-  background: #e5e5e5;
-  color: black;
+  background-color: #ffffff;
+  color: rgb(47, 11, 165);
   text-align: center;
-  padding: 8px;
+  padding: 10px;
   font-weight: bold;
   display: flex;
   justify-content: center;
-  gap: 15px;
+  gap: 18px;
+  border-bottom: 1px solid #ddd;
 }
 
-/* ===== CALENDARIO ===== */
+/* ==================== CALENDARIO ==================== */
 .schedule {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 10px;
-  padding: 15px;
+  gap: 14px;
+  padding: 20px;
+  max-width: 1200px;
+  margin: auto;
 }
 
+/* ==================== COLUMNA DIA ==================== */
 .day-column {
-  background: #f5f5f5;
-  color: black;
-  border-radius: 6px;
-  padding: 8px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.08);
 }
 
-/* ===== DIA ===== */
+/* ==================== CABECERA DIA ==================== */
 .day-title {
   text-align: center;
   font-weight: bold;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
 .day-name {
   display: block;
-  text-transform: uppercase;
   font-size: 12px;
+  text-transform: uppercase;
+  color: rgb(47, 11, 165);
 }
 
 .day-date {
   font-size: 11px;
+  color: #666;
 }
 
-/* ===== TURNOS ===== */
+/* ==================== TURNOS ==================== */
 .slots {
   display: flex;
   flex-direction: column;
@@ -82,26 +93,46 @@ body {
 
 .slot {
   text-align: center;
-  padding: 6px;
-  font-size: 12px;
-  border-radius: 4px;
+  padding: 7px;
+  font-size: 13px;
+  border-radius: 6px;
   font-weight: bold;
+  transition: transform 0.2s, opacity 0.2s;
 }
 
+/* === LIBRE === */
 .slot.libre {
-  background: #2e7d32;
+  background-color: #13b60e;
   color: white;
   cursor: pointer;
 }
 
-.slot.ocupado {
-  background: #c62828;
-  color: white;
+.slot.libre:hover {
+  background-color: #4ac61d;
+  transform: scale(1.03);
 }
 
-/* ===== MOBILE ===== */
-@media (max-width: 768px) {
+/* === OCUPADO === */
+.slot.ocupado {
+  background-color: #b7b6b6;
+  color: white;
+  opacity: 0.9;
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 992px) {
+  .schedule {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 576px) {
   .schedule {
     grid-template-columns: 1fr;
+    padding: 12px;
+  }
+
+  .titulo {
+    font-size: 16px;
   }
 }

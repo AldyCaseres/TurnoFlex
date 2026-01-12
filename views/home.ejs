@@ -4,29 +4,21 @@
   <meta charset="UTF-8">
   <title>TurnoFlex</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <link rel="stylesheet" href="/style/home.css">  
+  <link rel="stylesheet" href="/style/home.css">
 </head>
 
 <body>
 
 <!-- TOP BAR -->
 <div class="top-bar">
-  <div class="logo">Mini Futbol</div>
+  <div class="logo">TurnoFlex</div>
 
-  <div class="titulo">Turnos disponibles</div>
-
-  <a href="/login" class="user-icon">👤</a>
+  <a href="/login" class="user-icon">
+    👤
+  </a>
 </div>
 
-<!-- SEMANA -->
-<div class="week-bar">
-  <span>&lt;</span>
-  <span>13/10 AL 26/10</span>
-  <span>&gt;</span>
-</div>
-
-<!-- HORARIOS -->
+<!-- TURNOS -->
 <div class="schedule">
 
   <% for (const dia in turnosPorDia) { %>
@@ -37,14 +29,14 @@
           <%= new Date(dia).toLocaleDateString('es-AR', { weekday: 'long' }) %>
         </span>
         <span class="day-date">
-          <%= new Date(dia).getDate() %>/<%= new Date(dia).getMonth()+1 %>
+          <%= new Date(dia).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' }) %>
         </span>
       </div>
 
       <div class="slots">
         <% turnosPorDia[dia].forEach(turno => { %>
           <div class="slot <%= turno.estado %>">
-            <%= turno.turno %> A <%= Number(turno.turno) + 1 %> HS
+            <%= turno.turno %>:00 HS
           </div>
         <% }) %>
       </div>
