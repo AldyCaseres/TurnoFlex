@@ -1,13 +1,15 @@
-const pool = require('./db');
+const { pool } = require('./db/init');
 
 // ================== CLIENTES ==================
 
 async function nuevoCliente(data) {
+    console.log('DATA CLIENTE:', data);
   const { nombre, dni, telefono } = data;
-
+  
   if (!nombre || !dni || !telefono) {
     return { success: false, message: 'Datos incompletos' };
   }
+  console.log('DATA CLIENTE:', data);
 
   // verificar duplicado
   const existe = await pool.query(
@@ -43,8 +45,7 @@ async function eliminarCliente(data) {
 
   // borrar turnos primero (FK)
   await pool.query(
-    `DELETE FROM turnos 
-     WHERE cliente_id = (SELECT id FROM clientes WHERE dni = $1)`,
+    'DELETE FROM turnos WHERE dia = $1 AND turno = $2',
     [dni]
   );
 
@@ -138,29 +139,35 @@ async function eliminarTurno(data) {
 
 
 async function crearHorario(data) {
-  const { dia, turno } = data;
+  try {
+    const { dia, turno } = data;
 
-  if (!dia || !turno) {
-    return { success: false };
+    if (!dia || !turno) {
+      return { success: false, message: 'Datos incompletos' };
+    }
+
+    const existe = await pool.query(
+      'SELECT 1 FROM turnos WHERE dia = $1 AND turno = $2',
+      [dia, turno]
+    );
+
+    if (existe.rowCount > 0) {
+      return { success: false, message: 'Horario ya existe' };
+    }
+
+    await pool.query(
+      `INSERT INTO turnos (dia, turno, estado)
+       VALUES ($1, $2, 'libre')`,
+      [dia, turno]
+    );
+
+    return { success: true };
+  } catch (err) {
+    console.error('ERROR crearHorario:', err);
+    return { success: false, message: 'DB error' };
   }
-
-  const existe = await pool.query(
-    'SELECT 1 FROM turnos WHERE dia = $1 AND turno = $2',
-    [dia, turno]
-  );
-
-  if (existe.rowCount > 0) {
-    return { success: false };
-  }
-
-  await pool.query(
-    `INSERT INTO turnos (dia, turno, estado)
-     VALUES ($1, $2, 'libre')`,
-    [dia, turno]
-  );
-
-  return { success: true };
 }
+
 
 
 // ================== USUARIOS ==================

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const app = express();
@@ -6,11 +7,10 @@ const Seguridad = require('./seguridad.js');
 // Importamos initDB y pool directamente desde el archivo init.js
 const { initDB, pool } = require('./db/init');
 
-// Inicializa tablas si no existen
-initDB();
+
 
 // ================== CONFIGURACIÓN GLOBAL ==================
-const BASE_URL = process.env.BASE_URL || 'http://localhost:3000';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:8080';
 const TOKEN = process.env.APP_TOKEN || 'dev-token';
 
 // ================== MIDDLEWARE ==================
@@ -66,10 +66,11 @@ app.get('/crearHorario', (req, res) => {
 
 
 app.post('/guardarHorario', async (req, res) => {
+   console.log('BODY:', req.body);
   const r = await Seguridad.crearHorario(req.body);
 
   if (r.success) {
-    res.redirect('/menuGeneral');
+        res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
   } else {
     res.send('Error al crear horario');
   }
@@ -110,9 +111,11 @@ app.post('/api/clientes', async (req, res) => {
   if (respuesta.success) {
     res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
   } else {
-    res.status(401).send('Error al crear cliente');
+    console.error('ERROR NUEVO CLIENTE:', respuesta);
+    res.status(500).json(respuesta);
   }
 });
+
 
 app.post('/dameClientes', async (req, res) => {
   const resultado = await Seguridad.dameClientes(req.body);
@@ -253,8 +256,18 @@ app.post('/logout', (req, res) => {
 });
 
 // ================== SERVER ==================
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8080;
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`TurnoFlex escuchando en puerto ${PORT}`);
-});
+async function startServer() {
+  try {
+    await initDB();
+    app.listen(PORT, '127.0.0.1', () => {
+      console.log(`TurnoFlex escuchando en http://127.0.0.1:${PORT}`);
+    });
+  } catch (err) {
+    console.error('❌ No se pudo iniciar el servidor:', err);
+    process.exit(1);
+  }
+}
+
+startServer();

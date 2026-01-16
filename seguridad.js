@@ -1,95 +1,150 @@
+require('dotenv').config();
 const Controlador = require('./controlador.js');
 
-const TOKEN = 'lkjrt4v3wmtiqoprmmor98';
+const TOKEN = process.env.APP_TOKEN;
+
+function validarToken(data) {
+  if (!data || data.token !== TOKEN) {
+    console.error('❌ TOKEN INVALIDO:', data?.token);
+    return false;
+  }
+  return true;
+}
 
 // ================== TURNOS ==================
 
 async function nuevoTurno(data) {
-  if (data.token !== TOKEN) return { success: false };
+  if (!validarToken(data)) return { success: false };
 
-  data.estado = 'ocupado';
-
-  await Controlador.nuevoTurno(data);
-  return { success: true };
+  try {
+    return await Controlador.nuevoTurno(data);
+  } catch (err) {
+    console.error('ERROR nuevoTurno:', err);
+    return { success: false };
+  }
 }
 
 async function listarTurnos(data) {
-  if (data.token !== TOKEN) return { success: false };
+  if (!validarToken(data)) return { success: false };
 
-  const turnos = await Controlador.listarTurnos();
-  return { success: true, turnos };
+  try {
+    const turnos = await Controlador.listarTurnos();
+    return { success: true, turnos };
+  } catch (err) {
+    console.error('ERROR listarTurnos:', err);
+    return { success: false };
+  }
 }
 
 async function eliminarTurno(data) {
-  if (data.token !== TOKEN) return { success: false };
+  if (!validarToken(data)) return { success: false };
 
-  await Controlador.eliminarTurno(data.id);
-  return { success: true };
+  try {
+    return await Controlador.eliminarTurno(data);
+  } catch (err) {
+    console.error('ERROR eliminarTurno:', err);
+    return { success: false };
+  }
 }
 
 // ================== CLIENTES ==================
 
 async function nuevoCliente(data) {
-  if (data.token !== TOKEN) return { success: false };
+  if (!validarToken(data)) return { success: false };
 
-  await Controlador.nuevoCliente(data);
-  return { success: true };
+  try {
+    console.log('DATA CLIENTE:', data);
+    return await Controlador.nuevoCliente(data);
+  } catch (err) {
+    console.error('ERROR nuevoCliente:', err);
+    return { success: false };
+  }
 }
 
 async function dameClientes(data) {
-  if (data.token !== TOKEN) return { success: false };
+  if (!validarToken(data)) return { success: false };
 
-  const clientes = await Controlador.dameClientes();
-  return { success: true, clientes };
+  try {
+    const clientes = await Controlador.dameClientes();
+    return { success: true, clientes };
+  } catch (err) {
+    console.error('ERROR dameClientes:', err);
+    return { success: false };
+  }
 }
 
 async function eliminarCliente(data) {
-  if (data.token !== TOKEN) return { success: false };
+  if (!validarToken(data)) return { success: false };
 
-  await Controlador.eliminarCliente(data.id);
-  return { success: true };
+  try {
+    return await Controlador.eliminarCliente(data);
+  } catch (err) {
+    console.error('ERROR eliminarCliente:', err);
+    return { success: false };
+  }
 }
 
 // ================== USUARIOS ==================
 
 async function nuevoUsuario(data) {
-  if (data.token !== TOKEN) return { success: false };
+  if (!validarToken(data)) return { success: false };
 
-  await Controlador.nuevoUsuario(data);
-  return { success: true };
+  try {
+    return await Controlador.nuevoUsuario(data);
+  } catch (err) {
+    console.error('ERROR nuevoUsuario:', err);
+    return { success: false };
+  }
 }
 
 async function eliminarUsuario(data) {
-  if (data.token !== TOKEN) return { success: false };
+  if (!validarToken(data)) return { success: false };
 
-  await Controlador.eliminarUsuario(data.id);
-  return { success: true };
+  try {
+    return await Controlador.eliminarUsuario(data);
+  } catch (err) {
+    console.error('ERROR eliminarUsuario:', err);
+    return { success: false };
+  }
 }
 
 async function dameUsuarios(data) {
-  if (data.token !== TOKEN) return { success: false };
+  if (!validarToken(data)) return { success: false };
 
-  const usuarios = await Controlador.dameUsuarios();
-  return { success: true, usuarios };
+  try {
+    const usuarios = await Controlador.dameUsuarios();
+    return { success: true, usuarios };
+  } catch (err) {
+    console.error('ERROR dameUsuarios:', err);
+    return { success: false };
+  }
 }
-async function crearTurnoLibre(data) {
-  if (data.token !== TOKEN) return { success: false };
 
-  return Controlador.crearTurnoLibre(data);
+// ================== HORARIOS ==================
+
+async function crearHorario(data) {
+  if (!validarToken(data)) return { success: false };
+
+  try {
+    return await Controlador.crearHorario(data);
+  } catch (err) {
+    console.error('ERROR crearHorario:', err);
+    return { success: false };
+  }
 }
 
 async function ocuparTurno(data) {
-  if (data.token !== TOKEN) return { success: false };
+  if (!validarToken(data)) return { success: false };
 
-  return Controlador.ocuparTurno(data);
+  try {
+    return await Controlador.ocuparTurno(data);
+  } catch (err) {
+    console.error('ERROR ocuparTurno:', err);
+    return { success: false };
+  }
 }
 
-async function crearHorario(data) {
-  if (data.token !== TOKEN) return { success: false };
-
-  return await Controlador.crearHorario(data);
-}
-
+// ================== EXPORTS ==================
 
 module.exports = {
   nuevoTurno,
@@ -100,8 +155,7 @@ module.exports = {
   eliminarCliente,
   nuevoUsuario,
   eliminarUsuario,
-  dameUsuarios, 
-  crearTurnoLibre,
+  dameUsuarios,
   crearHorario,
   ocuparTurno
 };

@@ -10,11 +10,13 @@ body {
 /* ==================== TOP BAR ==================== */
 .top-bar {
   background-color: #b7b6b6;
-  padding: 14px 18px;
+padding: 10px 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
+
 
 .logo {
   font-weight: bold;
@@ -137,15 +139,4 @@ body {
   }
 
   
-}
-.logo-container {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  z-index: 10;
-}
-
-.logo-img {
-  height: 80px;
-  width: auto;
 }
