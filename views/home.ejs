@@ -19,27 +19,26 @@
 <div class="schedule">
 
   <% for (const dia in turnosPorDia) { %>
-    <div class="day-column">
-
-      <div class="day-title">
-        <span class="day-name">
-          <%= new Date(dia).toLocaleDateString('es-AR', { weekday: 'long' }) %>
-        </span>
-        <span class="day-date">
-          <%= new Date(dia).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit' }) %>
-        </span>
-      </div>
-
-      <div class="slots">
-        <% turnosPorDia[dia].forEach(turno => { %>
-          <div class="slot <%= turno.estado %>">
-            <%= turno.turno %>:00 HS
-          </div>
-        <% }) %>
-      </div>
-
+  <div class="day-column">
+    <div class="day-title">
+      <%= new Date(dia).toLocaleDateString('es-AR', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'numeric'
+      }) %>
     </div>
-  <% } %>
+
+    <% if (turnosPorDia[dia].length === 0) { %>
+      <div class="slot ocupado">Sin horarios</div>
+    <% } else { %>
+      <% turnosPorDia[dia].forEach(turno => { %>
+        <div class="slot <%= turno.estado === 'libre' ? 'libre' : 'ocupado' %>">
+          <%= turno.turno %>:00 HS
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+<% } %>
 
 </div>
 

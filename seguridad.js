@@ -13,16 +13,6 @@ function validarToken(data) {
 
 // ================== TURNOS ==================
 
-async function nuevoTurno(data) {
-  if (!validarToken(data)) return { success: false };
-
-  try {
-    return await Controlador.nuevoTurno(data);
-  } catch (err) {
-    console.error('ERROR nuevoTurno:', err);
-    return { success: false };
-  }
-}
 
 async function listarTurnos(data) {
   if (!validarToken(data)) return { success: false };
@@ -132,22 +122,17 @@ async function crearHorario(data) {
     return { success: false };
   }
 }
-
 async function ocuparTurno(data) {
-  if (!validarToken(data)) return { success: false };
+  if (data.token !== TOKEN) return { success: false };
 
-  try {
-    return await Controlador.ocuparTurno(data);
-  } catch (err) {
-    console.error('ERROR ocuparTurno:', err);
-    return { success: false };
-  }
+  return await Controlador.ocuparTurno(data);
 }
+
 
 // ================== EXPORTS ==================
 
 module.exports = {
-  nuevoTurno,
+  
   listarTurnos,
   eliminarTurno,
   nuevoCliente,

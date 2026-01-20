@@ -58,51 +58,6 @@ async function eliminarCliente(data) {
 }
 
 // ================== TURNOS ==================
-async function nuevoTurno(data) {
-  const { dia, turno, cliente } = data;
-
-  if (!dia || !turno || !cliente) {
-    return { success: false, message: 'Datos incompletos' };
-  }
-
-  // 1. Verificar turno duplicado - CAMBIADO 'hora' por 'turno'
-  const existe = await pool.query(
-    'SELECT 1 FROM turnos WHERE dia = $1 AND turno = $2',
-    [dia, turno]
-  );
-
-  if (existe.rowCount > 0) {
-    return { success: false, message: 'Turno ocupado' };
-  }
-
-  // extraer DNI del string
-  const regex = /^(.+?) - DNI: (\d+) - Tel: (\d+)$/;
-  const match = cliente.match(regex);
-
-  if (!match) {
-    return { success: false, message: 'Cliente inválido' };
-  }
-
-  const dni = match[2];
-
-  const clienteDB = await pool.query(
-    'SELECT id FROM clientes WHERE dni = $1',
-    [dni]
-  );
-
-  if (clienteDB.rowCount === 0) {
-    return { success: false, message: 'Cliente no existe' };
-  }
-
-  // 2. Insertar - CAMBIADO 'hora' por 'turno'
-  await pool.query(
-    `INSERT INTO turnos (dia, turno, estado, cliente_id)
-     VALUES ($1, $2, 'ocupado', $3)`,
-    [dia, turno, clienteDB.rows[0].id]
-  );
-
-  return { success: true };
-}
 
 async function listarTurnos() {
   const result = await pool.query(`
@@ -168,6 +123,59 @@ async function crearHorario(data) {
   }
 }
 
+async function ocuparTurno(data) {
+  const { dia, turno, cliente } = data;
+
+  if (!dia || !turno || !cliente) {
+    return { success: false, message: 'Datos incompletos' };
+  }
+
+  // Extraer DNI del string del datalist
+  const regex = /^(.+?) - DNI: (\d+) - Tel: (\d+)$/;
+  const match = cliente.match(regex);
+
+  if (!match) {
+    return { success: false, message: 'Cliente inválido' };
+  }
+
+  const dni = match[2];
+
+  // Buscar cliente_id
+  const clienteDB = await pool.query(
+    'SELECT id FROM clientes WHERE dni = $1',
+    [dni]
+  );
+
+  if (clienteDB.rowCount === 0) {
+    return { success: false, message: 'Cliente no existe' };
+  }
+
+  const cliente_id = clienteDB.rows[0].id;
+
+  // Verificar que el turno esté libre
+  const libre = await pool.query(
+    `SELECT 1 FROM turnos
+     WHERE dia = $1 AND turno = $2 AND estado = 'libre'`,
+    [dia, turno]
+  );
+
+  if (libre.rowCount === 0) {
+    return { success: false, message: 'Turno no disponible' };
+  }
+
+  // OCUPAR TURNO (NO INSERT)
+  await pool.query(
+    `UPDATE turnos
+     SET estado = 'ocupado', cliente_id = $3
+     WHERE dia = $1 AND turno = $2`,
+    [dia, turno, cliente_id]
+  );
+
+  return { success: true };
+}
+
+
+
 
 
 // ================== USUARIOS ==================
@@ -218,11 +226,11 @@ module.exports = {
   nuevoCliente,
   dameClientes,
   eliminarCliente,
-  nuevoTurno,
   listarTurnos,
   eliminarTurno,
   crearHorario,
   nuevoUsuario,
   eliminarUsuario,
-  dameUsuarios
+  dameUsuarios,
+  ocuparTurno
 };

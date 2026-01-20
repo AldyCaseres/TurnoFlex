@@ -19,36 +19,47 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.set('view engine', 'ejs');
 
-// ================== HEALTHCHECK (Railway) ==================
-app.get('/health', async (req, res) => {
-  try {
-    await pool.query('SELECT 1');
-    res.status(200).send('OK');
-  } catch (err) {
-    console.error('Health DB error:', err);
-    res.status(500).send('DB ERROR');
+
+// ⬇⬇⬇ ACA VA LA FUNCIÓN ⬇⬇⬇
+function generarDias(cantidad = 30) {
+  const dias = [];
+  const hoy = new Date();
+
+  for (let i = 0; i < cantidad; i++) {
+    const d = new Date(hoy);
+    d.setDate(hoy.getDate() + i);
+    dias.push(d.toISOString().split('T')[0]);
   }
-});
+
+  return dias;
+}
+
 
 // HOME PUBLICA - SOLO LECTURA
 app.get('/', async (req, res) => {
   try {
+    const dias = generarDias(30);
+
     const result = await pool.query(`
       SELECT dia, turno, estado
       FROM turnos
+      WHERE dia >= CURRENT_DATE
       ORDER BY dia, turno
     `);
 
     const turnosPorDia = {};
 
+    // inicializar TODOS los días
+    dias.forEach(dia => {
+      turnosPorDia[dia] = [];
+    });
+
+    // insertar turnos reales
     result.rows.forEach(t => {
       const diaKey = t.dia.toISOString().split('T')[0];
-
-      if (!turnosPorDia[diaKey]) {
-        turnosPorDia[diaKey] = [];
+      if (turnosPorDia[diaKey]) {
+        turnosPorDia[diaKey].push(t);
       }
-
-      turnosPorDia[diaKey].push(t);
     });
 
     res.render('home.ejs', { turnosPorDia });
@@ -57,6 +68,7 @@ app.get('/', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }
 });
+
 
 app.get('/crearHorario', (req, res) => {
   res.render('crearHorarios.ejs', {
@@ -156,15 +168,7 @@ app.post('/turnos', async (req, res) => {
   }
 });
 
-app.post('/nuevoturno', async (req, res) => {
-  const respuesta = await Seguridad.nuevoTurno(req.body);
 
-  if (respuesta.success) {
-    res.render('menu.ejs', { url: BASE_URL, token: TOKEN });
-  } else {
-    res.status(401).send('Error al crear turno');
-  }
-});
 
 app.post('/listarturnos', async (req, res) => {
   const resultado = await Seguridad.listarTurnos(req.body);

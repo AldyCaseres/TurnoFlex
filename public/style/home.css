@@ -23,6 +23,9 @@ padding: 10px 20px;
   color: rgb(47, 11, 165);
   font-size: 18px;
 }
+.logo-img {
+  height: 80px;
+}
 
 .titulo {
   font-size: 20px;
