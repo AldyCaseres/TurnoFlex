@@ -33,7 +33,8 @@
     <% } else { %>
       <% turnosPorDia[dia].forEach(turno => { %>
         <div class="slot <%= turno.estado === 'libre' ? 'libre' : 'ocupado' %>">
-          <%= turno.turno %>:00 HS
+          <%= turno.turno.toString().substring(0,5) %> HS
+
         </div>
       <% }) %>
     <% } %>
