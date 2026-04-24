@@ -265,7 +265,7 @@ const PORT = process.env.PORT || 8080;
 async function startServer() {
   try {
     await initDB();
-    app.listen(PORT, '127.0.0.1', () => {
+    app.listen(PORT,  () => {
       console.log(`TurnoFlex escuchando en http://127.0.0.1:${PORT}`);
     });
   } catch (err) {
